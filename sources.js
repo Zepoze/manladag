@@ -1,5 +1,4 @@
-const lelScanClass = require('./lelscanClass')
-const wesh = require('./Classbase')()
-module.exports.sources = [
+const lelScanClass = require('./lib/LelScan/class')
+module.exports = [
     lelScanClass
 ]

@@ -1,0 +1,140 @@
+'use strict';
+const consola = require('consola')
+const sources = require('./sources')
+var inquirer = require('inquirer');
+
+sources.forEach((e) => {
+    e
+        .on('number-of-page', (nbPages ) => {
+            consola.info(`contain ${nbPages} pages`)
+        })
+        .on('page-download-finished', ({ page, nbPages }) => {
+            consola.success(`Page ${page}/${nbPages} downloaded !`)
+        })
+        .on('chapter-download-started', ({ manga, chapter }) => {
+            consola.log('---------------------')
+            consola.info(`The download of ${manga} ${chapter} start!`)
+        })
+        .on('chapter-download-finished', ({ manga, chapter }) => {
+            consola.success(`${manga} ${chapter} downloaded !`)
+            consola.log('----------------------')
+        })
+        .on('chapter-download-error', e => {
+            consola.error(e)
+        })
+        .on('strategie-missing',(e) => {
+            consola.error(e)
+        })
+        .on('chapter-zip-started', ({ source, manga, chapter }) => {
+            consola.info('zip started')
+        })
+        .on('chapter-zip-finished', ({ source, manga, chapter }) => {
+            consola.success('zip finished')
+        })
+        .on('chapter-zip-error', ({ source, manga, chapter, error }) => {
+            consola.error(error)
+            consola.info('zip failed')
+        })
+        .on('chapter-pdf-started', ({ source, manga, chapter }) => {
+            consola.info('pdf started')
+        })
+        .on('chapter-pdf-finished', ({ source, manga, chapter }) => {
+            consola.success('pdf finished')
+        })
+        .on('chapter-pdf-error', ({ source, manga, chapter, error }) => {
+            consola.error(error)
+            consola.info('pdf failed')
+        })
+})
+
+async function startUI() {
+    let a = await inquirer
+    .prompt([
+        {
+        type: 'list',
+        name: 'source',
+        message: 'Which Source?',
+        choices: sources.map((e,i) => { return { name: e.site, value: i }})
+        }
+    ])
+    
+    selectManga(sources[a.source])
+
+
+}
+
+async function selectManga(source) {
+    let a = await inquirer
+    .prompt([
+        {
+        type: 'list',
+        name: 'manga',
+        message: `${source.site} Mangas`,
+        choices: [
+            ...source.mangas.map((e,i) => { return { name: e.name, value: i }}),
+            new inquirer.Separator(),
+            { name: 'Select an other Source', value: -1}
+        ]}
+    ])
+
+    if(a.manga == -1) startUI()
+    else selectChapter(source,a.manga)
+}
+
+
+async function selectChapter(source,manga_index) {
+    let a = await inquirer
+    .prompt([
+        {
+        type: 'list',
+        name: 'action',
+        message: 'Select an Action',
+        choices: [
+            {name: 'Download Last Chapter', value: 0},
+            { name: 'Download a chapter', value: 1},
+            new inquirer.Separator(),
+            {name: 'Select an Other Manga', value: -1}
+        ]}
+    ])
+
+    switch(a.action) {
+        case 0:
+            let chap = await source.getLastChapter(manga_index)
+            consola.info(`The last chapter : ${chap}`)
+
+            await source.downloadChapter(manga_index,chap)
+            selectManga(source)
+            break
+        case 1:
+            let b = await inquirer
+            .prompt([
+                {
+                type: 'input',
+                name: 'chapter',
+                message: 'type a chapter',
+                validate: (value) => (parseInt(value) >=0) ? true : 'Come on bro it should be a number'
+                }
+            ])
+            b.chapter = parseInt(b.chapter)
+            const path = await source.downloadChapter(manga_index,b.chapter)
+            if(path != 0) {
+                try { 
+                    //await source.zipChapter(manga_index,b.chapter,path)
+                    //await source.pdfChapter(manga_index,b.chapter,path)
+                    await source.processChapter(path, manga_index, b.chapter, { pdf: true, zip: true})
+		    
+	            } catch(e) {
+	                consola.error(e)
+	            }
+            }
+            selectManga(source)
+            
+            break
+        case -1:
+            selectManga(source) 
+            break
+    }
+
+}
+
+startUI()

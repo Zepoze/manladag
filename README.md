@@ -2,17 +2,17 @@
 
 Example: add the source Lelscan
 
-##1. Create folder
+## 1. Create folder
     $ mkdir LelScan
     $ cd LelScan
-##2. Create Source subClass
+## 2. Create Source subClass
 
 lib/LelScan/class.js
 
     const SourceClass = require('../class')()
     class LelScan extends SourceClass {}
 
-##3. Redefine static  members of Source
+## 3. Redefine static  members of Source
 *Please follows Source class logic*
 
 lib/LelScan/lelscan.js

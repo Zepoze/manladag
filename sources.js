@@ -1,4 +1,6 @@
-const lelScanClass = require('./lib/LelScan/class')
-module.exports = [
-    lelScanClass
-]
+module.exports = (downloadDir) =>  {    
+    const lelScanClass = require('./lib/LelScan/class')(downloadDir)
+    return [
+        lelScanClass
+    ]
+}

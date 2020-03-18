@@ -1,2 +1,3 @@
-exports.UI = require('./UIClass')
-exports.Sources = require('./sources')
+exports.UI = (downloadDir) => {
+    return require('./UIClass')(downloadDir)
+}

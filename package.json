@@ -15,10 +15,8 @@
     "zip-a-folder": "0.0.12"
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/zepoze/manladag.git"
+    "type": "git",
+    "url": "https://github.com/zepoze/manladag.git"
   },
   "homepage": "https://github.com/zepoze/manladag"
-  
-  
 }

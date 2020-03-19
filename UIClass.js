@@ -1,13 +1,25 @@
 module.exports = (downloadDir) => {
-    const _sources = require('./sources')(downloadDir)
+    const sourceBase = require('./lib/class')(downloadDir)
+    let childClass
     class UI {
 
-        constructor(childClass) {
+        constructor(child) {
+            childClass = child;
             (childClass || UI)._initEvent()
         }
-        
-        static _initEvent() {
-            this.sources.forEach(element => {
+        addSource(sourceClass, call) {
+            let s = sourceClass(sourceBase)
+            if(typeof(call) != 'undefined') {
+                if(typeof(call) != 'function') throw new Error('The second argument should be a function')
+                else s = call(s) || s
+            }
+            UI.sources.push(s);
+            (childClass || UI)._initEvent(s)
+        }
+
+        static _initEvent(s) {
+
+            function initEvent(element) {
                 element
                 .on('number-of-page', this.onNumberOfPage || ((nbPages ) => {
                     console.log(`contain ${nbPages} pages`)
@@ -59,10 +71,15 @@ module.exports = (downloadDir) => {
                 .on('chapter-is-available-error', this.onChapterIsAvailaleError || ((error) => {
                     console.log('error get last')
                 }))
-            })
+            }
+            if(s) {
+                initEvent.bind(this)(s)
+            } else {
+                this.sources.forEach(initEvent.bind(this))
+            }
         }
 
     }
-    UI.sources = _sources;
+    UI.sources = []
     return  UI
 }

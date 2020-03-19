@@ -17,6 +17,12 @@ module.exports = (downloadDir) => {
             (childClass || UI)._initEvent(s)
         }
 
+        setDefaultSources() {
+            Object.values(require('./sources')).forEach((e) => {
+                this.addSource(e)
+            })
+        }
+
         static _initEvent(s) {
 
             function initEvent(element) {

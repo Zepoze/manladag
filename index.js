@@ -1,5 +1,5 @@
-exports.UI = (downloadDir) => {
-    return require('./UIClass')(downloadDir)
-}
+module.exports.UI = require('./UIClass')
 
-exports.Sources = require('./sources')
+module.exports.Sources = require('./sources')
+
+module.exports.SourceClass = require('./lib/class')

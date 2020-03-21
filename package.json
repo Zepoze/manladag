@@ -1,6 +1,6 @@
 {
   "name": "manladag",
-  "version": "0.50.0",
+  "version": "2.0.0",
   "description": "Getter manga",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "images-pdf": "^1.0.3",
-    "manladag-lelscan": "^1.0.5",
+    "manladag-lelscan": "^1.0.8",
     "zip-a-folder": "0.0.12"
   },
   "repository": {
